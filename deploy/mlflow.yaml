@@ -15,6 +15,9 @@ metadata:
   name: mlflow
 spec:
   replicas: 1
+  # MLflow は SQLite を使うので、2つのPodが同時に動かないよう、古いPodを先に止める
+  strategy:
+    type: Recreate
   selector:
     matchLabels: {app: mlflow}
   template:
