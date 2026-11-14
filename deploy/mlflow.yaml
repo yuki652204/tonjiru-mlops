@@ -43,9 +43,9 @@ spec:
               value: "false"
           resources:
             requests:
-              memory: 512Mi
+              memory: 576Mi
             limits:
-              memory: 1536Mi
+              memory: 1Gi
           ports:
             - containerPort: 5000
           volumeMounts:
