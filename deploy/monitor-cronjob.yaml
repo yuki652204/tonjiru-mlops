@@ -1,4 +1,4 @@
-# 監視ジョブ：毎晩、直近7日の予測と実績を比べて、本番モデルが外れ始めていないかを確かめる
+# 監視パイプライン：毎晩、直近7日の予測と実績を比べる。要対応なら再学習して、モデル切り替えのPRを作る
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -17,16 +17,28 @@ spec:
           restartPolicy: Never
           containers:
             - name: monitor
-              image: tonjiru-monitor:0.1.0
+              image: tonjiru-pipeline:0.1.0
               imagePullPolicy: IfNotPresent
               env:
                 - name: PREDICT_URL
                   value: http://predict-api:8000
+                - name: MLFLOW_TRACKING_URI
+                  value: http://mlflow:5000
+                - name: MLFLOW_DISABLE_TELEMETRY
+                  value: "true"
+                - name: GITHUB_REPO
+                  value: yuki652204/tonjiru-mlops
+                # PRを作るためのトークン。Gitには入れず、手で作ったSecretから受け取る
+                - name: GITHUB_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: github-token
+                      key: token
                 # デモ用の「今日」。模擬データの期間に合わせて指定する（空にすると本当の今日）
                 - name: AS_OF
                   value: "2026-04-15"
               resources:
                 requests:
-                  memory: 128Mi
+                  memory: 512Mi
                 limits:
-                  memory: 256Mi
+                  memory: 1Gi
