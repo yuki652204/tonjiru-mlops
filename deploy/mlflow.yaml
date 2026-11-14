@@ -39,9 +39,9 @@ spec:
             - --workers=1
           resources:
             requests:
-              memory: 384Mi
+              memory: 512Mi
             limits:
-              memory: 768Mi
+              memory: 1536Mi
           ports:
             - containerPort: 5000
           volumeMounts:
