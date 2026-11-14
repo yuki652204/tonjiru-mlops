@@ -54,10 +54,16 @@ def github(method: str, path: str, token: str, body: dict | None = None) -> dict
             "Authorization": f"Bearer {token}",
             "Accept": "application/vnd.github+json",
             "X-GitHub-Api-Version": "2022-11-28",
+            "Content-Type": "application/json",
         },
     )
-    with urllib.request.urlopen(req, timeout=20) as res:
-        return json.load(res)
+    try:
+        with urllib.request.urlopen(req, timeout=20) as res:
+            return json.load(res)
+    except urllib.error.HTTPError as e:
+        # GitHub が返した理由（例: 権限が足りない）を、そのままログに残す
+        detail = e.read().decode(errors="replace")
+        raise RuntimeError(f"GitHub API {method} {path} が {e.code} で失敗: {detail}") from None
 
 
 def open_retrain_prs(repo: str, token: str) -> list:
