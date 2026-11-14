@@ -37,6 +37,10 @@ spec:
             - --allowed-hosts=mlflow,mlflow:5000,localhost,localhost:5000,127.0.0.1,127.0.0.1:5000
             # 一人で使う練習環境なので、受付窓口（ワーカー）は1つで十分
             - --workers=1
+          env:
+            # 使わない「ジョブ実行」機能を止める（起動時のメモリ削減と、CVE-2026-0545の回避）
+            - name: MLFLOW_SERVER_ENABLE_JOB_EXECUTION
+              value: "false"
           resources:
             requests:
               memory: 512Mi
