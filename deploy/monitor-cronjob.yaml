@@ -1,0 +1,32 @@
+# 監視ジョブ：毎晩、直近7日の予測と実績を比べて、本番モデルが外れ始めていないかを確かめる
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: monitor
+spec:
+  schedule: "0 22 * * *"      # 毎日 22:00（閉店後）
+  timeZone: "Asia/Tokyo"
+  concurrencyPolicy: Forbid    # 前回の監視が終わっていなければ、次は始めない
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0          # 「要対応」は異常ではなく判定結果なので、やり直さない
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: monitor
+              image: tonjiru-monitor:0.1.0
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: PREDICT_URL
+                  value: http://predict-api:8000
+                # デモ用の「今日」。模擬データの期間に合わせて指定する（空にすると本当の今日）
+                - name: AS_OF
+                  value: "2026-04-15"
+              resources:
+                requests:
+                  memory: 128Mi
+                limits:
+                  memory: 256Mi

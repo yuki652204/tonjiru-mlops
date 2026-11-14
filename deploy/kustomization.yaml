@@ -4,3 +4,4 @@ namespace: tonjiru
 resources:
   - mlflow.yaml
   - predict-api.yaml
+  - monitor-cronjob.yaml
