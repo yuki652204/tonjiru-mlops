@@ -29,7 +29,7 @@ spec:
               value: tonjiru-sales
             # ★ 本番で使うモデルのバージョン。ここを書き換えて PR → マージ → Argo CD が反映
             - name: MODEL_VERSION
-              value: "2"
+              value: "1"
           resources:
             requests:
               memory: 448Mi
