@@ -5,6 +5,13 @@ metadata:
   name: predict-api
 spec:
   replicas: 1
+  # 入れ替え方：新しいPodを1つ先に作り、準備ができてから古いPodを消す
+  # → 予測は止まらないが、入れ替え中はメモリを2つ分使う
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels: {app: predict-api}
   template:
@@ -23,6 +30,11 @@ spec:
             # ★ 本番で使うモデルのバージョン。ここを書き換えて PR → マージ → Argo CD が反映
             - name: MODEL_VERSION
               value: "2"
+          resources:
+            requests:
+              memory: 256Mi
+            limits:
+              memory: 640Mi
           ports:
             - containerPort: 8000
           readinessProbe:
