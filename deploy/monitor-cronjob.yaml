@@ -17,7 +17,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: monitor
-              image: tonjiru-pipeline:0.1.0
+              image: tonjiru-pipeline:0.1.1
               imagePullPolicy: IfNotPresent
               env:
                 - name: PREDICT_URL
@@ -26,6 +26,12 @@ spec:
                   value: http://mlflow:5000
                 - name: MLFLOW_DISABLE_TELEMETRY
                   value: "true"
+                # MLflow が git コマンドを探して出す警告を止める（イメージに git は入れていない）
+                - name: GIT_PYTHON_REFRESH
+                  value: quiet
+                # ログを出力した順に表示する（Python の出力ためこみを止める）
+                - name: PYTHONUNBUFFERED
+                  value: "1"
                 - name: GITHUB_REPO
                   value: yuki652204/tonjiru-mlops
                 # PRを作るためのトークン。Gitには入れず、手で作ったSecretから受け取る
