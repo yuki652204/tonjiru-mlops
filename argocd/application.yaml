@@ -1,0 +1,21 @@
+# Argo CD に「deploy/ フォルダを監視して、クラスタに反映し続けて」と伝える設定
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tonjiru-mlops
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/yuki652204/tonjiru-mlops.git
+    targetRevision: main
+    path: deploy
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: tonjiru
+  syncPolicy:
+    automated:
+      prune: true     # Git から消したリソースはクラスタからも消す
+      selfHeal: true  # クラスタを手で変えても Git の状態に戻す
+    syncOptions:
+      - CreateNamespace=true
